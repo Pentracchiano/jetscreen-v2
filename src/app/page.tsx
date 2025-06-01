@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { DirectionArrow } from "./components/DirectionArrow";
 import SlideHolder from "./components/SlideHolder";
 import { PlaneAnimation } from "./components/PlaneAnimation";
-import { haversineDistance } from "./lib/haversine";
+import { haversineDistance, calculateBearing } from "./lib/haversine"; // Added calculateBearing
 
 // Define types that match the structure expected by SlideHolder's new props
 type ItemProps = {
@@ -159,6 +159,30 @@ export default function Home() {
             console.debug(`Distance for ${plane} exceeds radius: ${distance}`, );
             return null;
           }
+
+          // Filter anything that is not visible (outside 180-degree FOV from FACING_DIRECTION)
+          const bearingToPlane = calculateBearing(
+            CENTER_LAT,
+            CENTER_LON,
+            plane.lat,
+            plane.lon
+          );
+          
+          let angularDifference = bearingToPlane - FACING_DIRECTION;
+          
+          // Normalize the angular difference to be between -180 and 180 degrees
+          if (angularDifference > 180) {
+            angularDifference -= 360;
+          } else if (angularDifference < -180) {
+            angularDifference += 360;
+          }
+
+          // If the absolute difference is greater than 90, it's outside the 180-degree FOV
+          if (Math.abs(angularDifference) > 90) {
+            console.debug(`Plane ${plane.flight} is outside FOV. Bearing: ${bearingToPlane}, Facing: ${FACING_DIRECTION}, Diff: ${angularDifference}`);
+            return null;
+          }
+
           return { ...plane, distance };
         })
         .filter((plane: any) => plane !== null);

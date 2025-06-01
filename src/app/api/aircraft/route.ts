@@ -49,7 +49,7 @@ const simulationState = {
     flightNumber: `Flight${i + 1}`,
     altitude: Math.round(10000 + Math.random() * 20000), // Random altitude between 10,000 and 30,000 feet
     speed: Math.round(200 + Math.random() * 300), // Random ground speed between 200 and 500 knots
-    circleRadius: 5 + Math.random() * (RADIUS_KM * 0.5), // Random radius in km, but not too close to the center
+    circleRadius: RADIUS_KM,
     rotationPeriod: 120 + Math.random() * 480, // Time to complete a circle in seconds (2-10 minutes)
     startAngle: Math.random() * 2 * Math.PI, // Random starting position
     clockwise: Math.random() > 0.5 // Random direction (clockwise or counterclockwise)
