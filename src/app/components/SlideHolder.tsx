@@ -4,8 +4,21 @@ import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/react-splide/css";
 import { classNames } from "../lib/classNames";
 
+type ItemProps = {
+  title?: string;
+  stat: React.ReactNode | string;
+  width?: string;
+  textSize?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"; // Extended options
+};
+
+type RowProps = ItemProps[];
+
+type SlideContentProps = {
+  rows: RowProps[];
+};
+
 type Props = {
-  slides: any;
+  slides: SlideContentProps[]; // Updated: Array of slide content objects
   splideRef: any;
 };
 
@@ -25,20 +38,52 @@ const SlideHolder = ({ slides, splideRef }: Props) => {
     <>
       {/* @ts-expect-error Server Component */}
       <Splide options={options} ref={splideRef}>
-        {slides.map((slide: any, index: number) => {
+        {slides.map((slideContent: SlideContentProps, slideIndex: number) => {
           return (
-            <SplideSlide key={index}>
-              <div className="h-full flex w-full text-white">
-                {slides.map((item: any, index: number) => (
-                  <div
-                    key={index}
-                    className={classNames(
-                      item.width ? item.width : "w-full",
-                      "text-white items-center justify-center flex flex-col "
-                    )}
-                  >
-                    <span className="text-6xl font-semibold ">{item.stat}</span>
-                    <div className="text-2xl mt-4 ">{item.title}</div>
+            <SplideSlide key={slideIndex}>
+              <div className="h-full flex flex-col w-full text-white justify-center items-center p-4">
+                {slideContent.rows.map((row: RowProps, rowIndex: number) => (
+                  <div key={rowIndex} className="flex w-full justify-center">
+                    {row.map((item: ItemProps, itemIndex: number) => (
+                      <div
+                        key={itemIndex}
+                        className={classNames(
+                          item.width ? item.width : "w-full",
+                          "text-white items-center justify-center flex flex-col p-2 text-center" // Added text-center
+                        )}
+                      >
+                        <span
+                          className={classNames(
+                            "font-semibold",
+                            item.textSize === "5xl" ? "text-5xl" :
+                            item.textSize === "4xl" ? "text-4xl" :
+                            item.textSize === "3xl" ? "text-3xl" :
+                            item.textSize === "xl" ? "text-2xl" : // Adjusted mapping
+                            item.textSize === "lg" ? "text-xl" :
+                            item.textSize === "md" ? "text-lg" :
+                            "text-base" // Default stat size
+                          )}
+                        >
+                          {item.stat}
+                        </span>
+                        {item.title && (
+                           <div
+                             className={classNames(
+                               "mt-1", // Common margin
+                               item.textSize === "5xl" ? "text-xl" :
+                               item.textSize === "4xl" ? "text-lg" :
+                               item.textSize === "3xl" ? "text-base" :
+                               item.textSize === "xl" ? "text-sm" : // Adjusted mapping
+                               item.textSize === "lg" ? "text-xs" :
+                               item.textSize === "md" ? "text-xs" :
+                               "text-xs" // Default title size
+                             )}
+                           >
+                             {item.title}
+                           </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
