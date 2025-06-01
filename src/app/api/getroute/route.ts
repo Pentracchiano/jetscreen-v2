@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const FLIGHT_DETAILS_URL = process.env.NEXT_PUBLIC_FLIGHT_DETAILS_URL || "";
+const TESTING = (process.env.TESTING === "true");
 
 export async function GET_prod(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -39,7 +40,7 @@ export async function GET_prod(request: NextRequest) {
     );
   }
 }
-export async function GET(request: NextRequest) {
+export async function GET_test(request: NextRequest) {
   // Synthetic data
   return NextResponse.json({
     "response": {
@@ -54,4 +55,12 @@ export async function GET(request: NextRequest) {
          },
     },
   });
+}
+
+export async function GET(request: NextRequest) {
+  if (TESTING) {
+    return GET_test(request);
+  }
+
+  return await GET_prod(request);
 }

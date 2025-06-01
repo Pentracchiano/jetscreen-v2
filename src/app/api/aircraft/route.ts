@@ -8,6 +8,7 @@ const CENTER_LON = parseFloat(process.env.NEXT_PUBLIC_CENTER_LON || "0");
 const RADIUS_KM = parseFloat(process.env.NEXT_PUBLIC_RADIUS_KM || "0");
 
 const RADIUS_NAUTICAL_MILES = Math.min(Math.round(RADIUS_KM * 0.53996), 250);
+const TESTING = (process.env.TESTING === "true");
 
 const API_URL = API_URL_FORMAT
   .replace("{lat}", CENTER_LAT.toString())
@@ -55,7 +56,7 @@ const simulationState = {
   }))
 };
 
-export async function GET() {
+export function GET_test() {
   const now = Date.now();
   const elapsedSeconds = (now - simulationState.startTime) / 1000;
   
@@ -106,4 +107,12 @@ export async function GET() {
   };
   
   return NextResponse.json(response);
+}
+
+export async function GET() {
+  if (TESTING) {
+    return GET_test();
+  }
+
+  return await GET_prod();
 }
