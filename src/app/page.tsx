@@ -37,12 +37,7 @@ export default function Home() {
     audioRef.current = new Audio('/ping.mp3');
   }, []);
 
-  const planeInfoSlides: SlideContent[] = React.useMemo(() => {
-    // Only create a plane slide if there's data for it
-    if (!nearestPlane && !statePlaneData) {
-      return [];
-    }
-    return [
+  const planeInfoSlides: SlideContent[] = [
       {
         rows: [
           [ // Row 1
@@ -119,9 +114,8 @@ export default function Home() {
         ],
       },
     ];
-  }, [nearestPlane, statePlaneData]); // Removed CENTER_LAT, CENTER_LON, FACING_DIRECTION
 
-  const timeInfoSlides: SlideContent[] = React.useMemo(() => [
+  const timeInfoSlides: SlideContent[] = [
     {
       rows: [
         [
@@ -134,7 +128,7 @@ export default function Home() {
         ],
       ],
     },
-  ], [currentTime]);
+  ];
 
   const getPlanesAround = async () => {
     setIsLoading(true);
@@ -246,21 +240,11 @@ export default function Home() {
     return () => clearInterval(planeInterval);
   }, []); 
 
-  const combinedSlides = React.useMemo(() => {
-    if (isLoading && planeInfoSlides.length === 0) {
-      // Optionally, return a specific loading slide structure
-      // For now, just show the time slide if plane data is loading and not yet available
-      return timeInfoSlides;
-    }
-    // If not loading, or if plane slides are available, combine them
-    return [...planeInfoSlides, ...timeInfoSlides];
-  }, [isLoading, planeInfoSlides, timeInfoSlides]);
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black relative overflow-hidden">
-      <PlaneAnimation />
       <div className="absolute inset-0 z-10">
-        <SlideHolder slides={combinedSlides} splideRef={splideRef} />
+        {statePlaneData && <PlaneAnimation />}
+        <SlideHolder slides={statePlaneData ? planeInfoSlides : timeInfoSlides} splideRef={splideRef} />
       </div>
     </main>
   );
