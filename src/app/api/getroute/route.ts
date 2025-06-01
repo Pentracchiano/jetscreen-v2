@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const FLIGHT_DETAILS_URL = process.env.NEXT_PUBLIC_FLIGHT_DETAILS_URL || "";
 
-export async function GET(request: NextRequest) {
+export async function GET_prod(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
   // Extract the callsign from the query parameters
@@ -38,4 +38,20 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+export async function GET(request: NextRequest) {
+  // Synthetic data
+  return NextResponse.json({
+    "response": {
+      flightroute: {
+         flight: "PENTRA",
+          origin: {
+            municipality: "Pentra", iata_code: "PEN"
+          },
+          destination: {
+            municipality: "Destination City", iata_code: "DST"
+          }
+         },
+    },
+  });
 }
