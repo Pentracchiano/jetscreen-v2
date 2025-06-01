@@ -31,6 +31,11 @@ export default function Home() {
   const currentCallsign = useRef<string>("");
   const splideRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio('/ping.mp3');
+  }, []);
 
   const planeInfoSlides: SlideContent[] = React.useMemo(() => {
     // Only create a plane slide if there's data for it
@@ -173,7 +178,10 @@ export default function Home() {
         if (currentCallsign.current === nearestPlaneCallsign) {
           return;
         }
+
+        audioRef?.current?.play();
         currentCallsign.current = nearestPlaneCallsign;
+
         const flightDetails = await fetch(
           `/api/getroute?callsign=${nearestPlaneCallsign}`
         );
